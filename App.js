@@ -7,106 +7,105 @@
  */
 
 import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {useState} from 'react';
+import {Alert, Platform, SafeAreaView, StyleSheet, View} from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
+import {COLORS} from './src/common/Colors';
+import AppButton from './src/components/AppButton';
+import VedioList from './src/components/VedioList';
+import * as Progress from 'react-native-progress';
+import storage from '@react-native-firebase/storage';
+import {utils} from '@react-native-firebase/app';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const App = () => {
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [transferred, setTransferred] = useState(0);
+  const tooglePicker = () => {
+    ImagePicker.openPicker({
+      mediaType: 'video',
+    }).then(video => {
+      console.log('video?.sourceURL', video);
+      // "/data/user/0/com.vedioapp/cache/react-native-image-crop-picker/SVID_20210804_035706_1.mp4"
+      setImage(video);
+      // if (video?.path) {
+      uploadImage(video);
+      // }
+    });
+  };
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+  const toogleCamira = async () => {
+    await ImagePicker.openCamera({
+      mediaType: 'video',
+    }).then(video => {
+      setImage(video);
+      console.log('vqwertyuiop[]', video?.sourceURL);
+      // if (video?.path) {
+      uploadImage();
+      // }
+    });
+  };
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const uploadImage = async video => {
+    const {path} = video;
+    const file_name = path.split('/').slice(-1)[0];
+    const uploadUri =
+      Platform.OS === 'ios' ? path.replace('file://', '') : path;
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    setUploading(true);
+    setTransferred(0);
+
+    const taskRef = storage().ref(`/videos/${file_name}`);
+
+
+
+    try {
+      await taskRef.putFile(uploadUri);
+    } catch (e) {
+      console.log('upload error', e);
+    }
+
+    setUploading(false);
+
+    Alert.alert(
+      'Photo uploaded!',
+      'Your photo has been uploaded to Firebase Cloud Storage!',
+    );
+
+    setImage(null);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.headerContainer}>
+        <AppButton
+          title={'Select'}
+          onPress={tooglePicker}
+          loading={uploading}
+        />
+        <AppButton
+          title={'Capture'}
+          onPress={toogleCamira}
+          loading={uploading}
+        />
+      </View>
+      {transferred ? <Progress.Bar progress={transferred} width={300} /> : null}
+      <VedioList />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: 20,
+    marginBottom: 10,
   },
 });
 
-export default App;
+export default React.memo(App);

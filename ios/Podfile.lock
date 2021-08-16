@@ -747,6 +747,16 @@ PODS:
     - Firebase/Firestore (= 8.5.0)
     - React-Core
     - RNFBApp
+  - RNImageCropPicker (0.36.2):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.36.2)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.36.2):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
+  - TOCropViewController (2.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -804,6 +814,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -832,6 +843,7 @@ SPEC REPOS:
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
+    - TOCropViewController
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -897,6 +909,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -956,6 +970,8 @@ SPEC CHECKSUMS:
   ReactCommon: 149906e01aa51142707a10665185db879898e966
   RNFBApp: 5f583e80cd7a32621d6057da3b786c4db96f1ef4
   RNFBFirestore: 90ef524f4615268a98569b4e6151e49b3b1b0852
+  RNImageCropPicker: 35a3ceb837446fa11547704709bb22b5fac6d584
+  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
