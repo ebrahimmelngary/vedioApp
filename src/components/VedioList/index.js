@@ -1,53 +1,79 @@
-import React, {useEffect, useState} from 'react';
-import {FlatList, Image, Text, TouchableOpacity, View} from 'react-native';
-import {IMAGES} from '../../common/Images';
+import React, {useState} from 'react';
+import {
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+  ImageBackground,
+  View,
+  Text,
+} from 'react-native';
 import styles from './styles';
-import storage from '@react-native-firebase/storage';
-import Video from 'react-native-video';
+import LottieView from 'lottie-react-native';
+import {ANMATIONS} from '../../common/Anmations';
+import PlayerModal from '../PlayerModal';
 
-const VedioList = () => {
-  const [data, setData] = useState();
+const VedioList = ({data}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [playVideo, setPlayVideo] = useState('');
 
-  console.log('data', data);
-  useEffect(() => {
-    storage()
-      .ref('videos')
-      .listAll()
-      .then(function (result) {
-        result.items.forEach(function (imageRef) {
-          imageRef
-            .getDownloadURL()
-            .then(function (url) {
-              data.push(url);
-              setData(data);
-            })
-            .catch(function (error) {
-              // Handle any errors
-            });
-        });
-      })
-      .catch(e => console.log('Errors while downloading => ', e));
-  }, []);
+  if (!data) {
+    return <ActivityIndicator color={'green'} size={'large'} />;
+  }
+
+  const handelPress = item => {
+    setIsVisible(!isVisible);
+    setPlayVideo(item?.vedioUrl);
+  };
 
   return (
-    <FlatList
-      data={data}
-      renderItem={({item, index}) => {
-        console.log('item', item[0]);
-        return (
-          <TouchableOpacity style={styles.card}>
-            <Video
-              source={{
-                uri: item.url,
-              }}
-            />
-            <Image source={IMAGES.play} style={styles.playImage} />
-          </TouchableOpacity>
-        );
-      }}
-      keyExtractor={(item, index) => item + index.toString()}
-    />
+    <>
+      <FlatList
+        data={data}
+        renderItem={({item}) => {
+          return (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => handelPress(item)}>
+              <ImageBackground
+                resizeMode={'cover'}
+                source={{uri: item.imageUrl}}
+                style={styles.imageBackground}>
+                <View>
+                  <LottieView
+                    source={ANMATIONS.play}
+                    autoPlay
+                    loop
+                    style={styles.playImage}
+                  />
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
+          );
+        }}
+        ListEmptyComponent={
+          <View style={styles.emptyScreen}>
+            <View>
+              <LottieView
+                source={ANMATIONS.noViedo}
+                autoPlay
+                autoSize
+                style={styles.emptyImage}
+              />
+            </View>
+            <Text style={styles.text}>
+              Please press select or capture to add your video
+            </Text>
+          </View>
+        }
+        keyExtractor={(item, index) => item + index.toString()}
+      />
+      <PlayerModal
+        isVisible={isVisible}
+        vedioUri={playVideo}
+        togleModal={() => setIsVisible(!isVisible)}
+      />
+    </>
   );
 };
 
-export default VedioList;
+export default React.memo(VedioList);

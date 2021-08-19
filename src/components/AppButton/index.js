@@ -18,14 +18,16 @@ const AppButton = ({
   return (
     <TouchableOpacity
       disabled={disabled || loading}
-      style={styles.button}
+      style={[styles.button,style]}
       onPress={onPress}
       {...props}>
       {left}
       {loading ? (
         <ActivityIndicator color={'green'} />
       ) : (
-        <Text numberOfLines={1}>{title}</Text>
+        <Text numberOfLines={1} style={[styles.titleStyle,titleStyle]}>
+          {title}
+        </Text>
       )}
       {right}
     </TouchableOpacity>
