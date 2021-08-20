@@ -38,6 +38,8 @@ const Home = () => {
   const tooglePicker = () => {
     ImagePicker.openPicker({
       mediaType: 'video',
+      compressVideoPreset: true,
+      compressImageQuality: 0.5,
     })
       .then(video => {
         createThumbnail({
@@ -53,6 +55,8 @@ const Home = () => {
   const toogleCamira = async () => {
     await ImagePicker.openCamera({
       mediaType: 'video',
+      compressVideoPreset: true,
+      compressImageQuality: 0.5,
     })
       .then(video => {
         createThumbnail({
